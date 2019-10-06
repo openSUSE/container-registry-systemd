@@ -17,23 +17,22 @@
 
 
 Name:           container-registry-systemd
-Version:        20191006
+Version:        0.0+git20191006.f22e281
 Release:        0
 Summary:        Systemd service files and config files for container-registry image
 License:        MIT
-Source:         container-registry.service
-Source1:        config.yml
-Source2:        sysconfig.container-registry
-Source3:        create-container-registry-certs.sh
-Source4:        LICENSE
+URL:            https://github.com/thkukuk/container-registry-systemd
+Source:         container-registry-systemd-%{version}.tar.xz
 Requires:       certstrap
 Requires(post): %fillup_prereq
+BuildArch:      noarch
 
 %description
 This package contains the configuration files, systemd units and scripts
 to run the openSUSE container registry managed by systemd.
 
 %prep
+%setup -q
 
 %build
 
@@ -43,10 +42,10 @@ mkdir -p %{buildroot}%{_sbindir}
 mkdir -p %{buildroot}%{_sysconfdir}/registry/certs
 mkdir -p %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_fillupdir}
-install -m 644 %{SOURCE0} %{buildroot}%{_unitdir}/
-install -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/registry
-install -m 644 %{SOURCE2} %{buildroot}%{_fillupdir}/
-install -m 755 %{SOURCE3} %{buildroot}%{_bindir}/create-container-registry-certs
+install -m 644 container-registry.service %{buildroot}%{_unitdir}/
+install -m 644 config.yml %{buildroot}%{_sysconfdir}/registry
+install -m 644 sysconfig.container-registry %{buildroot}%{_fillupdir}/
+install -m 755 create-container-registry-certs.sh %{buildroot}%{_bindir}/create-container-registry-certs
 # create symlink for rccontainer-registry
 ln -s /sbin/service %{buildroot}%{_sbindir}/rccontainer-registry
 
@@ -64,8 +63,9 @@ ln -s /sbin/service %{buildroot}%{_sbindir}/rccontainer-registry
 %service_del_postun container-registry.service
 
 %files
-%license %{SOURCE4}
-%{_sysconfdir}/registry/config.yml
+%license LICENSE
+%dir %{_sysconfdir}/registry
+%config(noreplace) %{_sysconfdir}/registry/config.yml
 %{_unitdir}/container-registry.service
 %{_fillupdir}/sysconfig.container-registry
 %{_bindir}/create-container-registry-certs
