@@ -1,0 +1,16 @@
+[Unit]
+Description=Container Registry
+Documentation=https://docs.docker.com/registry/
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+EnvironmentFile=/etc/sysconfig/container-registry
+ExecStartPre=-/usr/bin/podman stop %N
+ExecStartPre=-/usr/bin/podman rm %N
+ExecStartPre=/usr/bin/podman pull ${REGISTRY_IMAGE_PATH}
+ExecStart=/usr/bin/podman  run --rm -v /etc/registry:/etc/registry -p ${EXTERNAL_PORT}:5000 -v /srv/registry:/var/lib/docker-registry --name %N ${REGISTRY_IMAGE_PATH}
+ExecStop=/usr/bin/podman stop -t 2 container-registry
+
+[Install]
+WantedBy=multi-user.target

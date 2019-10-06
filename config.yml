@@ -1,0 +1,11 @@
+version: 0.1
+log:
+  level: info
+storage:
+  filesystem:
+    rootdirectory: /var/lib/docker-registry
+http:
+  addr: 0.0.0.0:5000
+  tls:
+    certificate: /etc/registry/certs/registry.crt
+    key: /etc/registry/certs/registry.key

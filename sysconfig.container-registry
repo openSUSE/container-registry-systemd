@@ -1,0 +1,13 @@
+## Path:	Container/Registry
+## Description:	Settings for registry container
+## Type:	string
+## Default:	"registry.opensuse.org/home/kukuk/container/container/opensuse/registry:latest"
+#
+# Name of the image path to pull the registry image
+REGISTRY_IMAGE_PATH=registry.opensuse.org/home/kukuk/container/container/opensuse/registry:latest
+
+## Type:        integer
+## Default:     "443"
+#
+# External port of the registry
+EXTERNAL_PORT="443"
