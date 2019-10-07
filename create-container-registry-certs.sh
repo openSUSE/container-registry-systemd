@@ -6,7 +6,7 @@ LANG=C
 if [ -n "$*" ]; then
   HOSTNAMES="$@"
 else
-  HOSTNAMES=`hostname -f`
+  HOSTNAMES="`hostname -f; hostname` localhost"
 fi
 
 mkdir -p ${CERTDIR}
