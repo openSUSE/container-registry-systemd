@@ -51,6 +51,7 @@ The configuration file for the container registry can be found at
 be copied to `/etc/registry/config.yml`. In this case, the administrator is
 responsible to merge distribution made changes in
 `/usr/etc/registry/config.yml`.
+The registry needs to be restarted so that the changes can take effect.
 
 ### Sysconfig File
 
