@@ -1,6 +1,9 @@
 [Unit]
 Description=Container Registry
 Documentation=https://docs.docker.com/registry/
+# Make sure that at least the certs directory exists, the registry
+# will fail if the configured certificates don't exist.
+ConditionPathExists=/etc/registry/certs
 
 [Service]
 TimeoutStartSec=0
