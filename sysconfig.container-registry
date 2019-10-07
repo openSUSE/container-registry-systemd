@@ -11,3 +11,10 @@ REGISTRY_IMAGE_PATH=registry.opensuse.org/home/kukuk/container/container/opensus
 #
 # External port of the registry
 EXTERNAL_PORT="443"
+
+## Type:        string
+## Default:     "/srv/registry"
+#
+# Name of the path where the container images should be stored
+STORAGE_DIR="/srv/registry"
+
