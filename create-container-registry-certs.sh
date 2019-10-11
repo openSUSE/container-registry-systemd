@@ -37,32 +37,23 @@ mkdir -p ${CERTDIR}
 # Create CA certificate
 certstrap --depot-path ${CERTDIR} init --common-name "ContainerRegistryCA" --passphrase ""
 
-if [ ! -z USE_PORTUS ]; then
-    # we create a setup for registry with portus
-    REG_HOSTNAMES="localhost"
-    if [ -n "$*" ]; then
-	PORTUS_HOSTNAMES="$@"
-    else
-	PORTUS_HOSTNAMES=`hostname -f`
-    fi
-    PORTUS_IP_ADDRS=`getent ahosts ${PORTUS_HOSTNAMES} | awk '{print $1}' | sort -u`
-    PORTUS_IP_ADDRS=`echo -n ${PORTUS_IP_ADDRS} | tr ' ' ','`
-    PORTUS_HOSTNAMES=`echo -n ${PORTUS_HOSTNAMES} | tr ' ' ','`
-    certstrap --depot-path ${CERTDIR} request-cert -ip ${PORTUS_IP_ADDRS} -domain ${PORTUS_HOSTNAMES} --passphrase "" --common-name portus
-    certstrap --depot-path ${CERTDIR} sign portus --CA "ContainerRegistryCA"
+if [ -n "$*" ]; then
+  HOSTNAMES="$@"
 else
-    if [ -n "$*" ]; then
-	REG_HOSTNAMES="$@"
-    else
-	REG_HOSTNAMES=`hostname -f`
-    fi
+  HOSTNAMES="`hostname -f; hostname` localhost"
 fi
 
-REG_IP_ADDRS=`getent ahosts ${REG_HOSTNAMES} | awk '{print $1}' | sort -u`
-REG_IP_ADDRS=`echo -n ${REG_IP_ADDRS} | tr ' ' ','`
-REG_HOSTNAMES=`echo -n ${REG_HOSTNAMES} | tr ' ' ','`
+IP_ADDRS=`getent ahosts ${HOSTNAMES} | awk '{print $1}' | sort -u`
+IP_ADDRS=`echo -n ${IP_ADDRS} | tr ' ' ','`
+HOSTNAMES=`echo -n ${HOSTNAMES} | tr ' ' ','`
 
-certstrap --depot-path ${CERTDIR} request-cert -ip ${REG_IP_ADDRS} -domain ${REG_HOSTNAMES} --passphrase "" --common-name registry
+if [ ! -z USE_PORTUS ]; then
+    certstrap --depot-path ${CERTDIR} request-cert -ip ${IP_ADDRS} -domain ${HOSTNAMES} --passphrase "" --common-name portus
+    certstrap --depot-path ${CERTDIR} sign portus --CA "ContainerRegistryCA"
+fi
+
+certstrap --depot-path ${CERTDIR} request-cert -ip ${IP_ADDRS} -domain ${HOSTNAMES} --passphrase "" --common-name registry
 certstrap --depot-path ${CERTDIR} sign registry --CA "ContainerRegistryCA"
-ln -sf ${CERTDIR}/ContainerRegistryCA.crt /etc/pki/trust/anchors/RegistryCA.pem
+
+ln -sf ${CERTDIR}/ContainerRegistryCA.crt /etc/pki/trust/anchors/ContainerRegistryCA.pem
 update-ca-certificates
