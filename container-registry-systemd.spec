@@ -45,7 +45,8 @@ mkdir -p %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_fillupdir}
 mkdir -p %{buildroot}/srv/registry
 install -m 644 container-registry.service %{buildroot}%{_unitdir}/
-install -m 644 config.yml %{buildroot}%{_distconfdir}/registry
+install -m 644 config.yml.standalone %{buildroot}%{_distconfdir}/registry/config.yml
+install -m 644 config.yml.portus %{buildroot}%{_distconfdir}/registry
 install -m 644 sysconfig.container-registry %{buildroot}%{_fillupdir}/
 install -m 755 create-container-registry-certs.sh %{buildroot}%{_sbindir}/create-container-registry-certs
 # create symlink for rccontainer-registry

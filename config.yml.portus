@@ -1,0 +1,41 @@
+version: 0.1
+log:
+  level: info
+  fields:
+    service: registry
+debug:
+    addr: localhost:5001
+storage:
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+  delete:
+    enabled: true
+http:
+  addr: 0.0.0.0:5000
+  host: {your.registry.fqdn}:5000
+  tls:
+    certificate: /etc/registry/certs/registry.crt
+    key: /etc/registry/certs/registry.key
+  headers:
+    X-Content-Type-Options: [nosniff]
+auth:
+  token:
+    realm: https://{your.registry.fqdn}/v2/token
+    service: {your.registry.fqdn}:5000
+    issuer: {your.registry.fqdn}
+    rootcertbundle: /etc/registry/certs/ContainerRegistryCA.crt
+notifications:
+  endpoints:
+    - name: portus
+      url: https://{your.registry.fqdn}/v2/webhooks/events
+      timeout: 500ms
+      threshold: 5
+      backoff: 1s
+health:
+  storagedriver:
+    enabled: true
+    interval: 10s
+    threshold: 3
+
