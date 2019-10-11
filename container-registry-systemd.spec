@@ -17,7 +17,7 @@
 
 
 Name:           container-registry-systemd
-Version:        0.0+git20191006.f22e281
+Version:        0.0
 Release:        0
 Summary:        Systemd service files and config files for container-registry image
 License:        MIT
@@ -37,15 +37,17 @@ to run the openSUSE container registry managed by systemd.
 %build
 
 %install
-mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_sbindir}
-mkdir -p %{buildroot}%{_sysconfdir}/registry/certs
+mkdir -p %{buildroot}%{_sysconfdir}/registry
+mkdir -p %{buildroot}%{_distconfdir}/registry
+mkdir -p %{buildroot}%{_localstatedir}/lib/container-registry
 mkdir -p %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_fillupdir}
+mkdir -p %{buildroot}/srv/registry
 install -m 644 container-registry.service %{buildroot}%{_unitdir}/
-install -m 644 config.yml %{buildroot}%{_sysconfdir}/registry
+install -m 644 config.yml %{buildroot}%{_distconfdir}/registry
 install -m 644 sysconfig.container-registry %{buildroot}%{_fillupdir}/
-install -m 755 create-container-registry-certs.sh %{buildroot}%{_bindir}/create-container-registry-certs
+install -m 755 create-container-registry-certs.sh %{buildroot}%{_sbindir}/create-container-registry-certs
 # create symlink for rccontainer-registry
 ln -s /sbin/service %{buildroot}%{_sbindir}/rccontainer-registry
 
@@ -64,11 +66,15 @@ ln -s /sbin/service %{buildroot}%{_sbindir}/rccontainer-registry
 
 %files
 %license LICENSE
+%doc README.md
 %dir %{_sysconfdir}/registry
-%config(noreplace) %{_sysconfdir}/registry/config.yml
+%dir %{_distconfdir}/registry
+%{_distconfdir}/registry/config.yml
 %{_unitdir}/container-registry.service
 %{_fillupdir}/sysconfig.container-registry
-%{_bindir}/create-container-registry-certs
+%{_sbindir}/create-container-registry-certs
 %{_sbindir}/rccontainer-registry
+%dir /srv/registry
+%dir %{_localstatedir}/lib/container-registry
 
 %changelog
