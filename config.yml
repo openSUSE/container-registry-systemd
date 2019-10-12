@@ -5,7 +5,7 @@ storage:
   filesystem:
     rootdirectory: /var/lib/registry
 http:
-  addr: 0.0.0.0:5000
+  addr: :5000
   tls:
     certificate: /etc/registry/certs/registry.crt
     key: /etc/registry/certs/registry.key
