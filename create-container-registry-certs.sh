@@ -4,7 +4,7 @@ LANG=C
 USE_PORTUS=
 
 show_help() {
-	echo "create-container-registry-certs [--help|--portus]"
+	echo "create-container-registry-certs [--help|--portus|--docker_auth]"
 	echo ""
 	echo "Script to create self signed certificates for a container"
 	echo "registry and optional portus"
@@ -23,6 +23,10 @@ do
 	    ;;
 	-p|--portus)
 	    USE_PORTUS=1
+	    shift
+	    ;;
+	--docker_auth)
+	    USE_DOCKER_AUTH=1
 	    shift
 	    ;;
 	*)    # unknown option
@@ -50,6 +54,10 @@ HOSTNAMES=`echo -n ${HOSTNAMES} | tr ' ' ','`
 if [ ! -z USE_PORTUS ]; then
     certstrap --depot-path ${CERTDIR} request-cert -ip ${IP_ADDRS} -domain ${HOSTNAMES} --passphrase "" --common-name portus
     certstrap --depot-path ${CERTDIR} sign portus --CA "ContainerRegistryCA"
+fi
+if [ ! -z USE_DOCKER_AUTH ]; then
+    certstrap --depot-path ${CERTDIR} request-cert -ip ${IP_ADDRS} -domain ${HOSTNAMES} --passphrase "" --common-name auth_server
+    certstrap --depot-path ${CERTDIR} sign auth_server --CA "ContainerRegistryCA"
 fi
 
 certstrap --depot-path ${CERTDIR} request-cert -ip ${IP_ADDRS} -domain ${HOSTNAMES} --passphrase "" --common-name registry

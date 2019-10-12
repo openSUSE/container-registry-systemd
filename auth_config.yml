@@ -1,0 +1,35 @@
+# Simple configuration file using TLS for a air gap/mirroring registry.
+# One admin account who is only allowed to push/manage images,
+# everybody else is allowed to list the catalog and pull images.
+#
+# You should change the admin password immeaditly!
+#
+# See reference.yml from the docker_auth RPM for explanation of all options.
+#
+
+server:
+  addr: ":5001"
+  certificate: "/etc/registry/certs/auth_server.crt"
+  key: "/etc/registry/certs/auth_server.key"
+
+token:
+  issuer: "openSUSE Kubic Auth Server"
+  expiration: 900
+
+users:
+  # Password is specified as a BCrypt hash. Use `htpasswd -nB USERNAME` to generate.
+  "admin":
+    password: "$2y$05$LO.vzwpWC5LZGqThvEfznu8qhb5SGqvBSWY1J3yZ4AxtMRZ3kN5jC"  # badmin
+  "": {}  # Allow anonymous (no "podman login") access.
+
+acl:
+  - match: {account: "admin"}
+    actions: ["*"]
+    comment: "Admin has full access to everything."
+  - match: {account: "", type: "registry", name: "catalog"}
+    actions: ["*"]
+    comment: "Anonymous users can query the catalog."
+  - match: {account: ""}
+    actions: ["pull"]
+    comment: "Anonymous users can pull everything"
+
