@@ -1,0 +1,20 @@
+[Unit]
+Description=Authentication server for Docker Registry 2
+Documentation=https://github.com/cesanta/docker_auth
+# Make sure that at least the certs directory exists, the container
+# will fail if the configured certificates don't exist.
+ConditionPathExists=/etc/registry/certs
+Wants=container-registry
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+Environment="DOCKER_AUTH_IMAGE_PATH=registry.opensuse.org/devel/kubic/containers/container/opensuse/docker_auth:latest"
+ExecStartPre=-/usr/bin/podman stop %N
+ExecStartPre=-/usr/bin/podman rm %N
+ExecStartPre=/usr/bin/podman pull ${DOCKER_AUTH_IMAGE_PATH}
+ExecStart=/usr/bin/podman run --rm -v /etc/registry:/etc/registry -p 5001:5001 --name %N ${DOCKER_AUTH_IMAGE_PATH} --logtostderr `test -f /etc/registry/auth_config.yml && echo /etc/registry/auth_config.yml || echo /usr/etc/registry/auth_config.yml`
+ExecStop=/usr/bin/podman stop -t 2 %N
+
+[Install]
+WantedBy=multi-user.target
