@@ -84,8 +84,8 @@ if [ -n "$USE_PORTUS" -a -z "$USE_AUTH" ]; then
 fi
 
 if [ -n "$FORCE_CLEAN" ]; then
-    echo "Deleting all content and subdirectories of /etc/registry!"
-    rm -rf /etc/registry/*
+    echo "Deleting all content and subdirectories of ${REGISTRYDIR}!"
+    rm -rf ${REGISTRYDIR}/*
 fi
 
 if [ -n "$USE_AUTH" ]; then
@@ -95,15 +95,19 @@ if [ -n "$USE_AUTH" ]; then
     fi
 
     # We need to copy the docker_auth template for the registry.
-    cp -a /usr/etc/registry/config.yml.docker_auth /etc/registry/config.yml
+    if [ ! -f ${REGISTRYDIR}/config.yml ]; then
+	cp -a /usr${REGISTRYDIR}/config.yml.docker_auth ${REGISTRYDIR}/config.yml
+    fi
     # XXX Copy the docker_auth config, too, needs a better solution
-    cp -a /usr/etc/registry/auth_config.yml /etc/registry/
+    if [ ! -f ${REGISTRYDIR}/auth_config.yml ]; then
+	cp -a /usr${REGISTRYDIR}/auth_config.yml ${REGISTRYDIR}/
+    fi
 
     systemctl enable container-registry
     systemctl enable registry-auth_server
 
     echo ""
-    echo "Please adjust /etc/registry/auth_config.yml and start:"
+    echo "Please adjust ${REGISTRYDIR}/auth_config.yml and start:"
     echo "  systemctl start container-registry"
     echo "  systemctl start registry-auth_server"
 
