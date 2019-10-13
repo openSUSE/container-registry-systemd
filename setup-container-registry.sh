@@ -94,11 +94,18 @@ if [ -n "$USE_AUTH" ]; then
 	create-container-registry-certs --docker_auth
     fi
 
-    # We need to copy the docker_auth template.
+    # We need to copy the docker_auth template for the registry.
     cp -a /usr/etc/registry/config.yml.docker_auth /etc/registry/config.yml
+    # XXX Copy the docker_auth config, too, needs a better solution
+    cp -a /usr/etc/registry/auth_config.yml /etc/registry/
 
     systemctl enable container-registry
     systemctl enable registry-auth_server
+
+    echo ""
+    echo "Please adjust /etc/registry/auth_config.yml and start:"
+    echo "  systemctl start container-registry"
+    echo "  systemctl start registry-auth_server"
 
     exit 0
 fi
@@ -121,3 +128,6 @@ if [ ! -d ${CERTDIR} ]; then
 fi
 
 systemctl enable container-registry
+
+echo "The container registry can be started by:"
+echo "  systemctl start container-registry"
