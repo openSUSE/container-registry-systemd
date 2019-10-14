@@ -19,7 +19,7 @@ http:
     X-Content-Type-Options: [nosniff]
 auth:
   token:
-    realm: "https://localhost:5001/auth"
+    realm: "https://{your.registry.fqdn}:5001/auth"
     service: "Container Registry"
     issuer: "openSUSE Kubic Auth Server"
     rootcertbundle: /etc/registry/certs/auth_server.crt

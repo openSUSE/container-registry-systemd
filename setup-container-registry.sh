@@ -96,7 +96,9 @@ if [ -n "$USE_AUTH" ]; then
 
     # We need to copy the docker_auth template for the registry.
     if [ ! -f ${REGISTRYDIR}/config.yml ]; then
-	cp -a /usr${REGISTRYDIR}/config.yml.docker_auth ${REGISTRYDIR}/config.yml
+	MY_HOSTNAME=`hostname -f`
+	sed -e "s|{your.registry.fqdn}|$MY_HOSTNAME|g" /usr${REGISTRYDIR}/config.yml.docker_auth > ${REGISTRYDIR}/config.yml
+	chmod 644 ${REGISTRYDIR}/config.yml
     fi
     # XXX Copy the docker_auth config, too, needs a better solution
     if [ ! -f ${REGISTRYDIR}/auth_config.yml ]; then
