@@ -4,7 +4,7 @@
 ## Default:	"registry.opensuse.org/opensuse/registry:latest"
 #
 # Name of the image path to pull the registry image
-REGISTRY_IMAGE_PATH=registry.opensuse.org/home/kukuk/container/container/opensuse/registry:latest
+REGISTRY_IMAGE_PATH="registry.opensuse.org/opensuse/registry:latest"
 
 ## Type:        integer
 ## Default:     "443"
