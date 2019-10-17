@@ -20,7 +20,7 @@ Name:           container-registry-systemd
 Version:        0.0
 Release:        0
 Summary:        Systemd service files and config files for container-registry image
-License:        MIT
+License:        GPL-3.0-or-later
 URL:            https://github.com/thkukuk/container-registry-systemd
 Source:         container-registry-systemd-%{version}.tar.xz
 Requires:       certstrap
@@ -44,37 +44,45 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/container-registry
 mkdir -p %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_fillupdir}
 mkdir -p %{buildroot}/srv/registry
-install -m 644 container-registry.service %{buildroot}%{_unitdir}/
-install -m 644 config.yml.standalone %{buildroot}%{_distconfdir}/registry/config.yml
-install -m 644 config.yml.portus %{buildroot}%{_distconfdir}/registry
+install -m 644 config.yml* %{buildroot}%{_distconfdir}/registry/
+install -m 644 auth_config.yml %{buildroot}%{_distconfdir}/registry
 install -m 644 sysconfig.container-registry %{buildroot}%{_fillupdir}/
 install -m 755 create-container-registry-certs.sh %{buildroot}%{_sbindir}/create-container-registry-certs
+install -m 755 setup-container-registry.sh %{buildroot}%{_sbindir}/setup-container-registry
+install -m 644 container-registry.service %{buildroot}%{_unitdir}/
+install -m 644 registry-auth_server.service %{buildroot}%{_unitdir}/
 # create symlink for rccontainer-registry
 ln -s /sbin/service %{buildroot}%{_sbindir}/rccontainer-registry
+ln -s /sbin/service %{buildroot}%{_sbindir}/rcregistry-auth_server
 
 %pre
-%service_add_pre container-registry.service
+%service_add_pre container-registry.service registry-auth_server.service
 
 %post
 %{fillup_only -n container-registry}
-%service_add_post container-registry.service
+%service_add_post container-registry.service registry-auth_server.service
 
 %preun
-%service_del_preun container-registry.service
+%service_del_preun container-registry.service registry-auth_server.service
 
 %postun
-%service_del_postun container-registry.service
+%service_del_postun container-registry.service registry-auth_server.service
 
 %files
-%license LICENSE
+%license COPYING
 %doc README.md
 %dir %{_sysconfdir}/registry
 %dir %{_distconfdir}/registry
+%{_distconfdir}/registry/auth_config.yml
 %{_distconfdir}/registry/config.yml
+%{_distconfdir}/registry/config.yml.*
 %{_unitdir}/container-registry.service
+%{_unitdir}/registry-auth_server.service
 %{_fillupdir}/sysconfig.container-registry
 %{_sbindir}/create-container-registry-certs
+%{_sbindir}/setup-container-registry
 %{_sbindir}/rccontainer-registry
+%{_sbindir}/rcregistry-auth_server
 %dir /srv/registry
 %dir %{_localstatedir}/lib/container-registry
 

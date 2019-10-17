@@ -7,18 +7,12 @@ Kubic](https://kubic.opensuse.org/).
 
 ## Quick Installation
 
-### Certificates
+### Setup Script
 
-The script `create-container-registry-certs` creates self signed certificates
-for the registry in `/etc/registry/certs`. It takes as arguments the names
-under which the registry should be reachable. If no argument is given,
-"localhost" and the local hostname are used. The script makes the CA
-certificate known to the local system. On every machine which should connect
-to this private registry, the file
-`/etc/registry/certs/ContainerRegistryCA.crt` needs to be copied to
-`/etc/pki/trust/anchors/ContainerRegistryCA.pem` and `update-ca-certificates`
-needs to be called.
-
+Run `setup-container-registry` to setup a registry with token based
+authentication. Other options e.g. without any authentication are possible,
+too. If necessary, this script will create self signed certificates and
+install them locally.
 
 ### Start Registry
 
@@ -34,15 +28,27 @@ Now the registry can be used.
 
 Since https is used to communicate with the registry by tools like docker,
 podman and cri-o, certificates are required to start the registry. An official
-certificate should be preferable requested, but a self signed as described
-above should work for the start, too. The certificate needs to be stored in
+certificate should be preferable requested, but a self signed should work for
+the start, too. The certificate needs to be stored in
 `/etc/registry/certs` as `registry.crt` and `registry.key`. Different names
 are possible, but in this case, `/usr/etc/registry/config.yml` needs to be
 copied to `/etc/registry` and adjusted. The directory `/etc/registry/certs`
 cannot be changed, else the container with the registry cannot access the
 certificates anymore.
-It is not necessary to distribute the public CA key to all machines with an
-official certificate.
+With an official certificate it is not necessary to distribute the public CA
+key to all machines.
+
+### Self Signed Certificates
+
+The script `create-container-registry-certs` creates self signed certificates
+for the registry in `/etc/registry/certs`. It takes as arguments the names
+under which the registry should be reachable. If no argument is given,
+"localhost" and the local hostname are used. The script makes the CA
+certificate known to the local system. On every machine which should connect
+to this private registry, the file
+`/etc/registry/certs/ContainerRegistryCA.crt` needs to be copied to
+`/etc/pki/trust/anchors/ContainerRegistryCA.pem` and `update-ca-certificates`
+needs to be called.
 
 ### Configuration File
 
