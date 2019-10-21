@@ -4,7 +4,7 @@ Documentation=https://github.com/cesanta/docker_auth
 # Make sure that at least the certs directory exists, the container
 # will fail if the configured certificates don't exist.
 ConditionPathExists=/etc/registry/certs
-Wants=container-registry
+Wants=container-registry.service
 
 [Service]
 TimeoutStartSec=0
