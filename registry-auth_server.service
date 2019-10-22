@@ -9,11 +9,11 @@ Wants=container-registry.service
 [Service]
 TimeoutStartSec=0
 Restart=always
-Environment="DOCKER_AUTH_IMAGE_PATH=registry.opensuse.org/devel/kubic/containers/container/opensuse/docker_auth:latest"
+EnvironmentFile=/etc/sysconfig/container-registry
 ExecStartPre=-/usr/bin/podman stop %N
 ExecStartPre=-/usr/bin/podman rm %N
-ExecStartPre=/usr/bin/podman pull ${DOCKER_AUTH_IMAGE_PATH}
-ExecStart=/usr/bin/podman run --rm -v /etc/registry:/etc/registry -p 5001:5001 --name %N ${DOCKER_AUTH_IMAGE_PATH}
+ExecStartPre=/usr/bin/podman pull ${AUTH_SERVER_IMAGE_PATH}
+ExecStart=/usr/bin/podman run --rm -v /etc/registry:/etc/registry -p 5001:5001 --name %N ${AUTH_SERVER_IMAGE_PATH}
 ExecStop=/usr/bin/podman stop -t 2 %N
 
 [Install]

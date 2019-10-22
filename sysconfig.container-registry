@@ -18,3 +18,8 @@ EXTERNAL_PORT="443"
 # Name of the path where the container images should be stored
 STORAGE_DIR="/srv/registry"
 
+## Type:	string
+## Default:	"registry.opensuse.org/opensuse/docker_auth:latest"
+#
+# Name of the image path to pull the auth server image
+AUTH_SERVER_IMAGE_PATH="registry.opensuse.org/opensuse/docker_auth:latest"
