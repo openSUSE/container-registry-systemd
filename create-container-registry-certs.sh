@@ -51,11 +51,11 @@ IP_ADDRS=`getent ahosts ${HOSTNAMES} | awk '{print $1}' | sort -u`
 IP_ADDRS=`echo -n ${IP_ADDRS} | tr ' ' ','`
 HOSTNAMES=`echo -n ${HOSTNAMES} | tr ' ' ','`
 
-if [ ! -z USE_PORTUS ]; then
+if [ ! -z "${USE_PORTUS}" ]; then
     certstrap --depot-path ${CERTDIR} request-cert -ip ${IP_ADDRS} -domain ${HOSTNAMES} --passphrase "" --common-name portus
     certstrap --depot-path ${CERTDIR} sign portus --CA "ContainerRegistryCA"
 fi
-if [ ! -z USE_DOCKER_AUTH ]; then
+if [ ! -z "${USE_DOCKER_AUTH}" ]; then
     certstrap --depot-path ${CERTDIR} request-cert -ip ${IP_ADDRS} -domain ${HOSTNAMES} --passphrase "" --common-name auth_server
     certstrap --depot-path ${CERTDIR} sign auth_server --CA "ContainerRegistryCA"
 fi
