@@ -41,9 +41,9 @@ show_help() {
 	echo "      Don't install an autentication server"
         echo "  --portus"
 	echo "      Use portus as authorization service and user interface"
-	echo "  --force"
+	echo "  -f|--force"
 	echo "      Delete everything in /etc/registry first"
-	echo "  --help"
+	echo "  -h|--help"
 	echo "      Display this help text"
 	echo ""
 }
@@ -69,6 +69,10 @@ do
 	-f|--force)
 	    FORCE_CLEAN=1
 	    shift
+	    ;;
+	-*)
+	    show_help
+	    exit 1
 	    ;;
 	*)    # unknown option
             POSITIONAL+=("$1") # save it in an array for later
