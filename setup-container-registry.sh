@@ -138,6 +138,7 @@ if [ ! -d ${CERTDIR} ]; then
 fi
 
 systemctl enable container-registry
+systemctl disable registry-auth_server
 
 echo "The container registry can be started by:"
 echo "  systemctl start container-registry"
