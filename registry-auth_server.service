@@ -4,6 +4,7 @@ Documentation=https://github.com/cesanta/docker_auth
 # Make sure that at least the certs directory exists, the container
 # will fail if the configured certificates don't exist.
 ConditionPathExists=/etc/registry/certs
+After=network-online.target
 Wants=container-registry.service
 
 [Service]
