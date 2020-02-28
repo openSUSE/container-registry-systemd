@@ -58,6 +58,8 @@ be copied to `/etc/registry/config.yml`. In this case, the administrator is
 responsible to merge distribution made changes in
 `/usr/etc/registry/config.yml`.
 The registry needs to be restarted so that the changes can take effect.
+More information about the registry configuration can be found
+[here](https://docs.docker.com/registry/configuration/).
 
 ### Sysconfig File
 
@@ -67,3 +69,12 @@ file and contains variables to run the registry container.
 * REGISTRY_IMAGE_PATH describes where the container registry image can be found.
 * EXTERNAL_PORT defines the port, under which the registry is reacheable.
 * STOARGE_DIR defines the directory, where the images are stored.
+
+### Pull-through cache
+Adjust the configuration file `/etc/registry/config.yml` and add the following
+lines to it:
+
+    proxy:
+      remoteurl: https://registry.opensuse.org
+
+This will configure the registry to act as a pull-through cache.
