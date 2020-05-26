@@ -7,15 +7,17 @@ After=network-online.target
 ConditionPathExists=/etc/registry/certs
 
 [Service]
-TimeoutStartSec=0
-Restart=always
+Restart=on-failure
 EnvironmentFile=/etc/sysconfig/container-registry
 ExecStartPre=-/usr/bin/podman stop %N
 ExecStartPre=-/usr/bin/podman rm %N
 ExecStartPre=-/usr/bin/podman pull ${REGISTRY_IMAGE_PATH}
 ExecStartPre=/bin/bash -c 'rm -rf /var/lib/container-registry/*; mkdir -p /var/lib/container-registry; if [ -d /usr/etc/registry ]; then cp -a /usr/etc/registry/* /var/lib/container-registry/; fi; cp -a /etc/registry/* /var/lib/container-registry/'
-ExecStart=/usr/bin/podman run --rm -v /var/lib/container-registry:/etc/registry -p ${EXTERNAL_PORT}:5000 -v ${STORAGE_DIR}:/var/lib/registry --name %N ${REGISTRY_IMAGE_PATH}
-ExecStop=/usr/bin/podman stop -t 2 %N
+ExecStart=/usr/bin/podman run -d --conmon-pidfile /%t/%n-pid --rm -v /var/lib/container-registry:/etc/registry -p ${EXTERNAL_PORT}:5000 -v ${STORAGE_DIR}:/var/lib/registry --name %N ${REGISTRY_IMAGE_PATH}
+ExecStop=/usr/bin/podman stop %N
+KillMode=none
+Type=forking
+PIDFile=/%t/%n-pid
 
 [Install]
 WantedBy=multi-user.target
