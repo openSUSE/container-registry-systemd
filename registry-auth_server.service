@@ -1,23 +1,28 @@
 [Unit]
 Description=Authentication server for Docker Registry 2
+Documentation=https://en.opensuse.org/Portal:Container/Image/docker_auth
 Documentation=https://github.com/cesanta/docker_auth
 # Make sure that at least the certs directory exists, the container
 # will fail if the configured certificates don't exist.
 ConditionPathExists=/etc/registry/certs
-After=network-online.target
+After=network-online.target local-fs.target firewalld.service
 Wants=container-registry.service
 
 [Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
 Restart=on-failure
-EnvironmentFile=/etc/sysconfig/container-registry
-ExecStartPre=-/usr/bin/podman stop %N
-ExecStartPre=-/usr/bin/podman rm %N
+RestartSec=1s
+StartLimitBurst=5
+TimeoutStopSec=70
+EnvironmentFile=/usr/etc/default/container-registry
+EnvironmentFile=-/etc/default/container-registry
+ExecStartPre=/bin/rm -f %t/%n.pid %t/%n.ctr-id
 ExecStartPre=-/usr/bin/podman pull ${AUTH_SERVER_IMAGE_PATH}
-ExecStart=/usr/bin/podman run -d --conmon-pidfile /%t/%n-pid --rm -v /etc/registry:/etc/registry -p 5001:5001 --name %N ${AUTH_SERVER_IMAGE_PATH}
-ExecStop=/usr/bin/podman stop %N
-KillMode=none
+ExecStart=/bin/sh -c "/usr/bin/podman run --conmon-pidfile %t/%n.pid --cidfile %t/%n.ctr-id --cgroups=no-conmon --replace -d --rm ${PODMAN_EXTRA_ARGS} -v /etc/registry:/etc/registry:z -p 5001:5001 --name %N ${AUTH_SERVER_IMAGE_PATH}"
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/%n.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n.ctr-id
 Type=forking
-PIDFile=/%t/%n-pid
+PIDFile=%t/%n.pid
 
 [Install]
 WantedBy=multi-user.target

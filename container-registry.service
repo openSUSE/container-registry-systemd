@@ -1,23 +1,29 @@
 [Unit]
 Description=Container Registry
+Documentation=https://github.com/kubic-project/container-registry-systemd
 Documentation=https://docs.docker.com/registry/
-After=network-online.target
+After=network-online.target local-fs.target firewalld.service
+Wants=network-online.target
 # Make sure that at least the certs directory exists, the registry
 # will fail if the configured certificates don't exist.
 ConditionPathExists=/etc/registry/certs
 
 [Service]
+Environment=PODMAN_SYSTEMD_UNIT=%n
 Restart=on-failure
-EnvironmentFile=/etc/sysconfig/container-registry
-ExecStartPre=-/usr/bin/podman stop %N
-ExecStartPre=-/usr/bin/podman rm %N
-ExecStartPre=-/usr/bin/podman pull ${REGISTRY_IMAGE_PATH}
+RestartSec=1s
+StartLimitBurst=5
+TimeoutStopSec=70
+EnvironmentFile=/usr/etc/default/container-registry
+EnvironmentFile=-/etc/default/container-registry
 ExecStartPre=/bin/bash -c 'rm -rf /var/lib/container-registry/*; mkdir -p /var/lib/container-registry; if [ -d /usr/etc/registry ]; then cp -a /usr/etc/registry/* /var/lib/container-registry/; fi; cp -a /etc/registry/* /var/lib/container-registry/'
-ExecStart=/usr/bin/podman run -d --conmon-pidfile /%t/%n-pid --rm -v /var/lib/container-registry:/etc/registry -p ${EXTERNAL_PORT}:5000 -v ${STORAGE_DIR}:/var/lib/registry --name %N ${REGISTRY_IMAGE_PATH}
-ExecStop=/usr/bin/podman stop %N
-KillMode=none
+ExecStartPre=/bin/rm -f %t/%n.pid %t/%n.ctr-id
+ExecStartPre=-/usr/bin/podman pull ${REGISTRY_IMAGE_PATH}
+ExecStart=/bin/sh -c "/usr/bin/podman run --conmon-pidfile %t/%n.pid --cidfile %t/%n.ctr-id --cgroups=no-conmon --replace -d --rm ${PODMAN_EXTRA_ARGS} -v /var/lib/container-registry:/etc/registry:z -p ${EXTERNAL_PORT}:5000 -v ${STORAGE_DIR}:/var/lib/registry:Z --name %N ${REGISTRY_IMAGE_PATH}"
+ExecStop=/usr/bin/podman stop --ignore --cidfile %t/%n.ctr-id -t 10
+ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n.ctr-id
 Type=forking
-PIDFile=/%t/%n-pid
+PIDFile=%t/%n.pid
 
 [Install]
 WantedBy=multi-user.target

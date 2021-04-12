@@ -61,16 +61,20 @@ The registry needs to be restarted so that the changes can take effect.
 More information about the registry configuration can be found
 [here](https://docs.docker.com/registry/configuration/).
 
-### Sysconfig File
+### Container default config file
 
-The file `/etc/sysconfig/container-registry` is read by the systemd service
-file and contains variables to run the registry container.
+The files `/usr/etc/default/container-registry` and 
+`/etc/default/container-registry` are read by the systemd service
+and contains variables to run the registry container. The first file contains
+the distribution defaults, the second file is optional and contains the
+changes done by the system administrator.
 
 * REGISTRY_IMAGE_PATH describes where the container registry image can be found.
 * EXTERNAL_PORT defines the port, under which the registry is reacheable.
 * STOARGE_DIR defines the directory, where the images are stored.
 
 ### Pull-through cache
+
 Adjust the configuration file `/etc/registry/config.yml` and add the following
 lines to it:
 
