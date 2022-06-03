@@ -20,11 +20,11 @@ EnvironmentFile=-/etc/default/container-registry
 ExecStartPre=/bin/bash -c 'rm -rf /var/lib/container-registry/*; mkdir -p /var/lib/container-registry; if [ -d /usr/etc/registry ]; then cp -a /usr/etc/registry/* /var/lib/container-registry/; fi; cp -a /etc/registry/* /var/lib/container-registry/'
 ExecStartPre=/bin/rm -f %t/%n.pid %t/%n.ctr-id
 ExecStartPre=-/usr/bin/podman pull ${REGISTRY_IMAGE_PATH}
-ExecStart=/bin/sh -c "/usr/bin/podman run --conmon-pidfile %t/%n.pid --cidfile %t/%n.ctr-id --cgroups=no-conmon --replace -d --rm ${PODMAN_EXTRA_ARGS} -v /var/lib/container-registry:/etc/registry:z -p ${EXTERNAL_PORT}:5000 -v ${STORAGE_DIR}:/var/lib/registry:Z --name %N ${REGISTRY_IMAGE_PATH}"
+ExecStart=/bin/sh -c "/usr/bin/podman run --conmon-pidfile %t/%n.pid --cidfile %t/%n.ctr-id --cgroups=no-conmon --sdnotify=conmon --replace -d --rm ${PODMAN_EXTRA_ARGS} -v /var/lib/container-registry:/etc/registry:z -p ${EXTERNAL_PORT}:5000 -v ${STORAGE_DIR}:/var/lib/registry:Z --name %N ${REGISTRY_IMAGE_PATH}"
 ExecStop=/usr/bin/podman stop --ignore --cidfile %t/%n.ctr-id -t 10
 ExecStopPost=/usr/bin/podman rm --ignore -f --cidfile %t/%n.ctr-id
 Type=notify
-PIDFile=%t/%n.pid
+NotifyAccess=all
 
 [Install]
 WantedBy=multi-user.target
